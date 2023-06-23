@@ -58,7 +58,10 @@ app.post('/number', async (req, res) => {
 
 app.get('/number', async (req, res) => {
 
-    const { currentPage, pageSize }  = req.params
+    let { currentPage, pageSize }  = req.params
+    
+    currentPage = currentPage? currentPage : 1
+    pageSize = pageSize? pageSize : 15
     
     const skipAmount = (currentPage - 1) * pageSize;
     let total = await Number.find().length
