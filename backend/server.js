@@ -43,28 +43,6 @@ const connectDatabase = () => {
 connectDatabase();
 
 
-let env = 'production'
-
-if (env === 'production') {
-    app.use(express.static(path.join(__dirname,'..', '/frontend/build')))
-
-    app.get('*', (req, res) => {
-        // refering to frontend project
-        res.sendFile(path.join(__dirname,'..', 'frontend', 'build', 'index.html'))
-    });
-    app.get('/', (req, res) => {
-        res.json({
-            ok: true,
-            message: 'Server is Running!'
-        })
-    })
-} else {
-    app.get('/', (req, res) => {
-        res.send('Server is Running! 🚀');
-    });
-}
-
-
 app.post('/number', async (req, res) => {
 
     const { firstName, lastName, phone } = req.body
@@ -80,9 +58,39 @@ app.post('/number', async (req, res) => {
 
 app.get('/number', async (req, res) => {
 
+    const { currentPage, pageSize }  = req.params
+    
+    const skipAmount = (currentPage - 1) * pageSize;
+    let total = await Number.find().length
     const result = await Number.find()
+      .skip(skipAmount)
+      .limit(pageSize);
 
-    res.json({numbers: result})
+    res.json({ numbers: result, metdata: {
+        total
+    }})
 })
+
+
+let env = 'production'
+if (env === 'production') {
+    app.use(express.static(path.join(__dirname,'..', '/frontend/build')))
+
+    app.get('*', (req, res) => {
+        // refering to frontend project
+        res.sendFile(path.join(__dirname,'..', 'frontend', 'build', 'index.html'))
+    });
+    // app.get('/', (req, res) => {
+    //     res.json({
+    //         ok: true,
+    //         message: 'Server is Running!'
+    //     })
+    // })
+} else {
+    app.get('/', (req, res) => {
+        res.send('Server is Running! 🚀');
+    });
+}
+
 const PORT = 4000
 app.listen(PORT, () => console.log(`Listening at http://localhost:${PORT}`))
