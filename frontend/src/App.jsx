@@ -1,20 +1,43 @@
-import axios from 'axios';
+
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import AddNumber from './components/AddNumber';
-
 import './App.css'
+
+import { api } from './util/api'
+
 function App() {
 
   const [data, setData] = useState(null)
   const [addNumber, setAddNumber] = useState(false)
 
-  const fetchData = async () => {
-    const { data } = await axios.get('http://localhost:4000/number')
-    console.log(data);
-    setData(data.numbers)
-  }
 
+  const [total, setTotal] = useState(null)
+  const [totalPages, setTotalPages] = useState(null)
+  const [currentPage, setCurrentPage] = useState(null)
+  const [pageSize, setpageSize] = useState(null)
+
+
+  const fetchData = async () => {
+    try {
+      const { data } = await api.get('/number', {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        params: {
+          currentPage,
+          pageSize
+        }
+      })
+      const { total } = data.metadata
+      setTotalPages(Math.floor(total / pageSize))
+      setTotal(total)
+      console.log(data);
+      setData(data.numbers)
+    } catch (error) {
+      alert('Error While Fetching Numbers')
+    }
+  }
   useEffect(() => {
     fetchData()
   }, [addNumber])
@@ -33,9 +56,9 @@ function App() {
 
             <table className=' w-full '>
               <thead className='py-10 font-semibold bg-red-200'>
-                <td className='px-5 py-3'>No</td>
-                <td className='px-5 py-3'>Name</td>
-                <td className='px-5 py-3'>Number</td>
+                <th className='px-5 py-3'>No</th>
+                <th className='px-5 py-3'>Name</th>
+                <th className='px-5 py-3'>Number</th>
               </thead>
               <tbody>
                 {
@@ -60,4 +83,4 @@ function App() {
   );
 }
 
-export default App;
+export default App

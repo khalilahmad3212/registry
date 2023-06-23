@@ -1,5 +1,7 @@
-import axios from 'axios'
+
 import React, { useState } from 'react'
+
+import { api } from '../util/api'
 
 const AddNumber = ({ setAddNumber }) => {
 
@@ -10,7 +12,7 @@ const AddNumber = ({ setAddNumber }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await axios.post('http://localhost:4000/number', {
+        const res = await api.post('/number', {
             firstName,
             lastName,
             phone
