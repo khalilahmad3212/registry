@@ -43,7 +43,7 @@ const connectDatabase = () => {
 connectDatabase();
 
 
-let env = 'productio'
+let env = 'production'
 
 if (env === 'production') {
     app.use(express.static(path.join(__dirname,'..', '/frontend/build')))
